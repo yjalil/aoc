@@ -20,4 +20,4 @@ solve:
 	python api/solution.py $(year) $(day) $(part) $(file)
 
 test:
-	pytest -q api/tests/
+	pytest -v --color=yes api/tests/

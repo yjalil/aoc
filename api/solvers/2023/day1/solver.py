@@ -17,11 +17,10 @@ def part2(input):
               'eight',
               'nine',
               ]
-    letters_backward = [x[::-1] for x in letters]
     numbers = [str(i) for i in range(1,10)]
-    keys =  letters + numbers + letters_backward
-    values = numbers + numbers + numbers
-    mapper = {keys[i] : values[i] for i in range(len(keys))}
+    keys =  letters + numbers + [x[::-1] for x in letters]
+    values = numbers * 3
+    mapper = dict(zip(keys,values))
     p_first = "|".join(map(re.escape, keys[:18]))
     p_last = "|".join(map(re.escape, keys[9:]))
     matches = [int(mapper[re.findall(p_first, x)[0]] + mapper[re.findall(p_last, x[::-1])[0]]) for x in input]

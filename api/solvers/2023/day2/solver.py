@@ -1,4 +1,3 @@
-import re
 import math
 
 def part1(input):
@@ -16,7 +15,7 @@ def part1(input):
             colors = [x.strip(',') for x in colors]
             nums = round.strip().split(' ')[::2]
             nums = [int(x) for x in nums]
-            mapper = {colors[i]:nums[i] for i in range(len(nums))}
+            mapper = dict(zip(colors,nums))
             common_keys = constraint.keys() & mapper.keys()
             if any(mapper[key] > constraint[key] for key in common_keys) :
                 impossible_games.append(id+1)
@@ -24,29 +23,19 @@ def part1(input):
     return sum(set([i+1 for i in range(len(games))]).difference(set(impossible_games)))
 
 def part2(input):
+    games = [x.split(':')[1].strip() for x in input]
+
     powers = 0
-    games =  [x.split(':')[1].strip() for x in input]
-    for id,game in enumerate(games):
-        # print(f'--------Game {id + 1}---------')
-        sets= []
-        for round in game.split(';'):
-            colors = round.strip().split(' ')[1::2]
-            colors = [x.strip(',') for x in colors]
-            nums = round.strip().split(' ')[::2]
-            nums = [int(x) for x in nums]
-            mapper = {colors[i]:nums[i] for i in range(len(nums))}
-            sets.append(mapper)
-        largest_values_dict = {}
+    for game in games:
+        rounds = game.split(';')
+        sets = [
+            {color.strip(','): int(num) for num, color in zip(round.split()[::2], round.split()[1::2])}
+            for round in rounds
+        ]
 
-        all_keys = set().union(*(d.keys() for d in sets))
+        all_keys = set().union(*sets)
+        largest_values_dict = {key: max(d.get(key, float('-inf')) for d in sets) for key in all_keys}
 
-        # Iterate over each key and find the maximum value
-        for key in all_keys:
-            max_value = float('-inf')
-            for d in sets:
-                if key in d:
-                    max_value = max(max_value, d[key])
-            largest_values_dict[key] = max_value
-        # print(math.prod(largest_values_dict.values()))
-        powers = powers + math.prod(largest_values_dict.values())
+        powers += math.prod(largest_values_dict.values())
+
     return powers
