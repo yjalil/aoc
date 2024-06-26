@@ -7,4 +7,4 @@ def test_day1_2023_part1():
 
 def test_day1_2023_part2():
     assert solve(2023,1,2,'example2') == 281
-    assert solve(2023,1,1,'input') == 55358
+    assert solve(2023,1,2,'input') == 55358
