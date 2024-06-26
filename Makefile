@@ -15,3 +15,9 @@ stop:
 
 input:
 	python api/get_input.py $(year) $(day)
+
+solve:
+	python api/solution.py $(year) $(day) $(part) $(file)
+
+test:
+	pytest -q api/tests/
