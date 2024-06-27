@@ -34,7 +34,7 @@ def part2(input):
         ]
 
         all_keys = set().union(*sets)
-        largest_values_dict = {key: max(d.get(key, float('-inf')) for d in sets) for key in all_keys}
+        largest_values_dict = {key: max(d.get(key, 0) for d in sets) for key in all_keys}
 
         powers += math.prod(largest_values_dict.values())
 
