@@ -1,4 +1,5 @@
 import re
+from collections import namedtuple
 
 def part1(input):
     padded_input = ['.'*len(input[0])] + input + ['.'*len(input[0])]
@@ -7,7 +8,7 @@ def part1(input):
     pp =  "|".join(map(re.escape, ['+','-','*','#','$','%','&','@','/','=']))
     total = []
     for id,line in enumerate(padded_input[1:]):
-        print(f'==========line{id + 1 }============')
+        # print(f'==========line{id + 1 }============')
         nums = re.findall(p,line)
         start = 0
         for num in nums :
@@ -20,28 +21,29 @@ def part1(input):
                 total.append(num)
             start = line.index(num) + len(num)
         # print(f'====>{total}')
-    # return total
-    return sum([int(x) for x in total])
+    return sum(int(x) for x in total)
 
 def part2(input):
     p = r'(\d+)'
-    pp =  r'(\d+)\.{1,5}\*\.{2,4}(\d+)'
-
-    total = []
-    padded_input = ['.' + line + '.' for line in input]
-    for id,line in enumerate(padded_input[:-2]):
-        print(f'==========line{id + 1 }============')
-        nums = re.findall(p,line)
+    stars = []
+    numbers = []
+    Star = namedtuple('Star',['i','j','neighbors'])
+    Number = namedtuple('Number',['value','i','j','len'])
+    for i,row in enumerate(input):
         start = 0
-        for num in nums :
-            window = padded_input[id][line.index(num, start):line.index(num, start)+len(num)] + '.' \
-                + padded_input[id + 1][line.index(num, start)-1:line.index(num, start)+len(num) + 1] \
-                + padded_input[id + 2][line.index(num, start)-4:line.index(num, start)+len(num) + 3]
-            print(f'number: {num} with window {window} => {re.findall(pp,window)}')
-            match = re.findall(pp,window)
-            if len(match) > 0 :
-                total.append(int(match[0][0])*int(match[0][1]))
-            start = line.index(num) + len(num)
-        print(f'====>{total}')
-    # return total
-    return sum([int(x) for x in total])
+        for num in re.findall(p,row):
+            numbers.append(Number(num, i, row.index(num, start), len(num)))
+            start = row.index(num, start) + len(num)
+        for j,col in enumerate(row):
+            if col == '*':
+                stars.append(Star(i,j,[]))
+    for star in stars:
+        for num in numbers:
+            if num.i <= star.i + 1 and star.i - 1 <= num.i :
+                if star.j in range(num.j -1 ,num.j+ num.len +1):
+                    star.neighbors.append(num.value)
+
+    for s in stars:
+        print(f'L:{s.i + 1} C:{s.j + 1} => {s.neighbors}')
+    return sum(int(star.neighbors[0]) * int(star.neighbors[-1])
+                for star in stars if len(star.neighbors) >= 2)
